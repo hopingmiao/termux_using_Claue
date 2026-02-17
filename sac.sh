@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version="Ver2.9.8"
+version="Ver2.9.9"
 clewd_version="$(grep '"version"' "clewd/package.json" | awk -F '"' '{print $4}')($(grep "Main = 'clewd修改版 v'" "clewd/lib/clewd-utils.js" | awk -F'[()]' '{print $3}'))"
 st_version=$(grep '"version"' "SillyTavern/package.json" | awk -F '"' '{print $4}')
 echo "hoping：卡在这里了？...说明有小猫没开魔法喵~"
@@ -45,9 +45,13 @@ else
   fi
 fi
 
-#添加termux上的Ubuntu/root软链接
+#添加termux上的debian/root软链接
 if [ ! -d "/data/data/com.termux/files/home/root" ]; then
-    ln -s /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/root /data/data/com.termux/files/home
+    if [ -d "/data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/debian/root" ]; then
+        ln -s /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/debian/root /data/data/com.termux/files/home
+    elif [ -d "/data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/root" ]; then
+        ln -s /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/root /data/data/com.termux/files/home
+    fi
 fi
 
 echo "root软链接已添加，可直接在mt管理器打开root文件夹修改文件"
@@ -534,14 +538,16 @@ function sillyTavernSettings {
 						mv SillyTavern_old $NEW_FOLDER_NAME
 					fi                                                                
 					echo -e "
-hoping：选择更新正式版或者测试版喵？
+hoping：选择版本或者输入版本号喵？
 \033[0;33m选项1 正式版\033[0m
-\033[0;37m选项2 测试版\033[0m"
+\033[0;37m选项2 测试版\033[0m
+\033[0;33m自定义版本格式：x.y.z\033[0m"
 					while :
 					do
-					    read -n 1 stupdate
+					    read stupdate
 					    [ "$stupdate" = 1 ] && { git clone https://github.com/SillyTavern/SillyTavern.git SillyTavern_new; break; }
 					    [ "$stupdate" = 2 ] && { git clone -b staging https://github.com/SillyTavern/SillyTavern.git SillyTavern_new; break; }
+                        [[ "$stupdate" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] && { git clone -b "$stupdate" https://github.com/SillyTavern/SillyTavern.git SillyTavern_new; break; }
 					    echo -e "\n\033[5;33m选择错误，快快重新选择喵~\033[0m"
 					done
 
@@ -551,15 +557,7 @@ hoping：选择更新正式版或者测试版喵？
 					fi
 					
 					if [ -d "SillyTavern/data/default-user" ]; then
-					    cp -r SillyTavern/data/default-user/characters/. SillyTavern_new/public/characters/
-    					cp -r SillyTavern/data/default-user/chats/. SillyTavern_new/public/chats/       
-    					cp -r SillyTavern/data/default-user/worlds/. SillyTavern_new/public/worlds/
-    					cp -r SillyTavern/data/default-user/groups/. SillyTavern_new/public/groups/
-    					cp -r SillyTavern/data/default-user/group\ chats/. SillyTavern_new/public/group\ chats/
-    					cp -r SillyTavern/data/default-user/OpenAI\ Settings/. SillyTavern_new/public/OpenAI\ Settings/
-    					cp -r SillyTavern/data/default-user/User\ Avatars/. SillyTavern_new/public/User\ Avatars/
-    					cp -r SillyTavern/data/default-user/backgrounds/. SillyTavern_new/public/backgrounds/
-    					cp -r SillyTavern/data/default-user/settings.json SillyTavern_new/public/settings.json
+					    cp -r SillyTavern/data/. SillyTavern_new/data/
 					else
     					cp -r SillyTavern/public/characters/. SillyTavern_new/public/characters/
     					cp -r SillyTavern/public/chats/. SillyTavern_new/public/chats/       
