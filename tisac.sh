@@ -13,7 +13,7 @@ echo -e "\033[0;31m开魔法！开魔法！开魔法！\033[0m\n"
 
 read -p "确保开了魔法后按回车继续"
 
-current=/data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/debian
+current="$PREFIX/var/lib/proot-distro/containers/debian/rootfs"
 
 yes | pkg update
 yes | pkg upgrade
@@ -76,7 +76,7 @@ if [ ! -f "$current/root/sac.sh" ]; then
    exit
 fi
 
-ln -s /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/debian/root
+ln -s /data/data/com.termux/files/usr/var/lib/proot-distro/containers/debian/rootfs/root
 
 echo "bash /root/sac.sh" >>$current/root/.bashrc
 
